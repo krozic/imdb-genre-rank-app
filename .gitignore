@@ -1,4 +1,7 @@
 venv/
+previous_versions/
+.idea/
 *.pyc
 .env
 .DS_Store
+scraps
