@@ -40,13 +40,23 @@ app.layout = dbc.Container([
             html.Img(id='poster', src='')
         ], width=6),
         dbc.Col([
-            dash_table.DataTable(df.to_dict('records'), [{'name': i, 'id': i} for i in df.columns], id='tbl'),
+            dbc.Row([
+                html.H2(id='rating', children='')
+            ]),
+            dbc.Row([
+                dash_table.DataTable(df.to_dict('records'), [{'name': i, 'id': i} for i in df.columns], id='tbl'),
+            ]),
+            # dash_table.DataTable(df.to_dict('records'), [{'name': i, 'id': i} for i in df.columns], id='tbl'),
         ], width=6)
     ])
 ])
 
 @app.callback(
-    [Output('tbl', 'data'), Output('tbl', 'columns'), Output('movie_title', 'children'), Output('poster', 'src')],
+    [Output('tbl', 'data'),
+     Output('tbl', 'columns'),
+     Output('movie_title', 'children'),
+     Output('poster', 'src'),
+     Output('rating', 'children')],
     Input('submit-val', 'n_clicks'),
     State('url_input', 'value'),
 )
@@ -54,12 +64,12 @@ app.layout = dbc.Container([
 def update_output(n_clicks, url_input):
     if n_clicks == 0:
         df = pd.DataFrame({'Genre': [' '], 'Rank': [' ']})
-        return df.to_dict('records'), [{'name': i, 'id': i} for i in df.columns], '', ''
+        return df.to_dict('records'), [{'name': i, 'id': i} for i in df.columns], '', '', ''
     else:
         url = url_input
         movie_info = get_movie_info(url)
         df = get_movie_rank(movie_info, genre_rank)
-        return df.to_dict('records'), [{'name': i, 'id': i} for i in df.columns], movie_info['title'], movie_info['poster']
+        return df.to_dict('records'), [{'name': i, 'id': i} for i in df.columns], movie_info['title'], movie_info['poster'], 'Rating: {}'.format(movie_info['rating'])
 
 if __name__ == '__main__':
     app.run_server(debug=True)

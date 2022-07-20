@@ -25,6 +25,8 @@ def get_movie_info(url: str) -> Dict[str, Any]:
     genres_soup = page_soup.find('div', {'data-testid': 'genres'}).find_all('span')
     genres = []
     for i in genres_soup:
+        if i.get_text() == 'Music':
+            continue
         genres.append(i.get_text())
     movie_info['genres'] = genres
 
@@ -49,3 +51,7 @@ def get_movie_rank(movie_info: Dict[str, Any], genre_rank: pd.DataFrame) -> pd.D
     movie_rank['Rank'] = ranks
 
     return movie_rank.sort_values('Rank', ascending=False)
+
+url = 'https://www.imdb.com/title/tt3704428/?ref_=tt_rvi_tt_i_5'
+movie_info = get_movie_info(url)
+movie_rank = get_movie_rank(movie_info, genre_rank)
