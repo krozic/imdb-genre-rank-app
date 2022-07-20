@@ -10,6 +10,7 @@ genre_rank = pd.read_csv('./tables/genre_rank.csv')
 df = pd.DataFrame({'Genre': [' '], 'Rank': [' ']})
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+server = app.server
 
 app.layout = dbc.Container([
     dbc.Row([
