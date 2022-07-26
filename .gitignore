@@ -4,4 +4,4 @@ previous_versions/
 *.pyc
 .env
 .DS_Store
-scraps
+scraps.py

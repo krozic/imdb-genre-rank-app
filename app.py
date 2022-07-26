@@ -8,6 +8,7 @@ import dash_bootstrap_components as dbc
 
 # import data:
 genre_rank = pd.read_csv('./tables/genre_rank.csv')
+genre_medians = pd.read_csv('./tables/genre_medians.csv')
 movie_rank = pd.DataFrame({'Genre': [' '], 'Rank': [' ']})
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -89,13 +90,13 @@ app.layout = dbc.Container([
 def update_output(n_clicks, url_input):
     if n_clicks == 0:
         movie_rank = pd.DataFrame({'Genre': [' '], 'Rank': [' ']})
-        fig = plot_genre_dist(genre_rank)
+        fig = plot_genre_dist(genre_rank, genre_medians)
         return '', '', '', '', fig
     else:
         url = url_input
         movie_info = get_movie_info(url)
         movie_rank = get_movie_rank(movie_info, genre_rank)
-        fig = plot_movie_rank(movie_info, movie_rank, genre_rank)
+        fig = plot_movie_rank(movie_info, movie_rank, genre_rank, genre_medians)
         return dbc.Table.from_dataframe(movie_rank, hover=True), \
                movie_info['title'], \
                movie_info['poster'], \
