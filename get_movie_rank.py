@@ -24,6 +24,7 @@ def get_movie_info(url: str) -> Dict[str, Any]:
     r = requests.get(
         f'http://www.omdbapi.com/?i={movie}&apikey={api_key}')
     data = r.json()
+    rt = np.nan
     try:
         for rating in data['Ratings']:
             if rating['Source'] == 'Rotten Tomatoes':
