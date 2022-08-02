@@ -89,7 +89,9 @@ app.layout = dbc.Container([
                     'rt': 'Rotten Tomatoes',
                     'mc': 'Metascore'
                 },
-                value='imdb'
+                value='imdb',
+                searchable=False,
+                clearable=False
             ),
         ],width=5),
     ]),
