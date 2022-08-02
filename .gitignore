@@ -5,4 +5,3 @@ previous_versions/
 .env
 .DS_Store
 scraps.py
-my_secrets.py

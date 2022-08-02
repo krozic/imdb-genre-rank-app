@@ -7,6 +7,8 @@
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/get_movie_rank.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_movie_rank.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plotly_creator.py" beforeDir="false" afterPath="$PROJECT_DIR$/plotly_creator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tables/genre_medians.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tables/genre_rank.csv" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
