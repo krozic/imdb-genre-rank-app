@@ -60,7 +60,7 @@ def plot_movie_rank(movie_info: Dict[str, Any], movie_rank: pd.DataFrame, genre_
     if rating_choice == 'imdb':
         rank = 'IMDB Rank'
     elif rating_choice == 'rt':
-        rank = 'Rotten Tomatoes Rank'
+        rank = 'Tomatometer Rank'
     elif rating_choice == 'mc':
         rank = 'Metascore Rank'
     fig.add_trace(go.Scatter(x=x,
