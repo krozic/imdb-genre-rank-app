@@ -25,10 +25,12 @@ def get_movie_info(url: str) -> Dict[str, Any]:
         f'http://www.omdbapi.com/?i={movie}&apikey={api_key}')
     data = r.json()
     try:
-        if data['Ratings'][1]['Source'] == 'Rotten Tomatoes':
-            rt = int(data['Ratings'][1]['Value'].replace('%', ''))
-        else:
-            rt = np.nan
+        for rating in data['Ratings']:
+            if rating['Source'] == 'Rotten Tomatoes':
+                rt = int(rating['Value'].replace('%', ''))
+                break
+            else:
+                rt = np.nan
     except:
         rt = np.nan
     try:
@@ -38,6 +40,12 @@ def get_movie_info(url: str) -> Dict[str, Any]:
             mc = np.nan
     except:
         mc = np.nan
+    if np.isnan(mc):
+        try:
+            mc = int(page_soup.find('span', {'class': 'score-meta'}).get_text())
+        except:
+            mc = np.nan
+
     movie_info['rt'] = rt
     movie_info['mc'] = mc
 
@@ -55,6 +63,7 @@ def get_movie_info(url: str) -> Dict[str, Any]:
 
 
     return movie_info
+# print(get_movie_info('https://www.imdb.com/title/tt10954984/?ref_=fn_al_tt_1'))
 
 def get_movie_rank(movie_info: Dict[str, Any], rank_tables: Dict[str, pd.DataFrame]) -> pd.DataFrame:
     '''Takes a movie_info Dict and rank_tables Dict of DataFrames
