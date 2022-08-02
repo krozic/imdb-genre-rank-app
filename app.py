@@ -7,8 +7,6 @@ import pandas as pd
 import dash_bootstrap_components as dbc
 
 # import data:
-genre_rank = pd.read_csv('./tables/genre_rank.csv')
-genre_medians = pd.read_csv('./tables/genre_medians.csv')
 movie_rank = pd.DataFrame({'Genre': [' '], 'Rank': [' ']})
 
 table_names = pd.read_csv('./tables/table_names.csv')
