@@ -1,27 +1,46 @@
+from my_secrets import api_key
 import pandas as pd
+import numpy as np
 from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen as uReq
+import requests
 import re
 from typing import Dict, Any
 
-with open('./tables/genre_rank.csv', 'r') as filehandle:
-    genre_rank = pd.read_csv(filehandle)
-
 def get_movie_info(url: str) -> Dict[str, Any]:
     '''Takes an IMDB movie url and returns
-     the rating, genres, title, and poster link in a Dict'''
+     the rating (imdb, rt, and mc), genres, title, and poster link in a Dict'''
+
     movie_info = {}
     uClient = uReq(url)
     page_html = uClient.read()
     uClient.close()
     page_soup = soup(page_html, 'html.parser')
 
-    # movie_info['title'] = page_soup.find('h1', {'class':'sc-b73cd867-0 eKrKux'}).get_text()
-    # movie_info['rating'] = float(page_soup.find('span', {'class':'sc-7ab21ed2-1 jGRxWM'}).get_text())
     movie_info['title'] = page_soup.find('h1', {'data-testid':'hero-title-block__title'}).get_text()
-    movie_info['rating'] = float(page_soup.find('div', {'data-testid': 'hero-rating-bar__aggregate-rating'}).find('span').get_text())
+    movie_info['imdb'] = float(page_soup.find('div', {'data-testid': 'hero-rating-bar__aggregate-rating'}).find('span').get_text())
 
-    # genres_soup = page_soup.find('div', {'class':'ipc-chip-list__scroller'}).find_all('span')
+    movie = re.search('tt[0-9]+', url).group()
+    r = requests.get(
+        f'http://www.omdbapi.com/?i={movie}&apikey={api_key}')
+    data = r.json()
+    try:
+        if data['Ratings'][1]['Source'] == 'Rotten Tomatoes':
+            rt = int(data['Ratings'][1]['Value'].replace('%', ''))
+        else:
+            rt = np.nan
+    except:
+        rt = np.nan
+    try:
+        if data['Metascore'] != 'N/A':
+            mc = int(data['Metascore'])
+        else:
+            mc = np.nan
+    except:
+        mc = np.nan
+    movie_info['rt'] = rt
+    movie_info['mc'] = mc
+
     genres_soup = page_soup.find('div', {'data-testid': 'genres'}).find_all('span')
     genres = []
     for i in genres_soup:
@@ -34,24 +53,42 @@ def get_movie_info(url: str) -> Dict[str, Any]:
     poster_link = re.search('src=".*jpg"', str(poster_text)).group()
     movie_info['poster'] = poster_link[5:len(poster_link)-1]
 
+
     return movie_info
 
-def get_movie_rank(movie_info: Dict[str, Any], genre_rank: pd.DataFrame) -> pd.DataFrame:
-    '''Takes a movie_info Dict and genre_rank DataFrame
-    returns the ranking for each genre'''
-    # movie_rank = {}
-    # genres = movie_info['genres']
+def get_movie_rank(movie_info: Dict[str, Any], rank_tables: Dict[str, pd.DataFrame]) -> pd.DataFrame:
+    '''Takes a movie_info Dict and rank_tables Dict of DataFrames
+    Returns the ranking for each genre for each rating system'''
+
     ranks = []
     movie_rank = pd.DataFrame({'Genre': movie_info['genres']})
-    rating = movie_info['rating']
+    rating = movie_info['imdb']
+    genre_rank = rank_tables['imdb_genre_rank']
 
     for genre in movie_info['genres']:
-        # movie_rank[genre] = genre_rank.loc[genre_rank['averageRating'] == rating, [genre]].values[0][0]
-        ranks.append(genre_rank.loc[genre_rank['averageRating'] == rating, [genre]].values[0][0])
-    movie_rank['Rank'] = ranks
+        ranks.append(genre_rank.loc[genre_rank['rating'] == rating, [genre]].values[0][0])
+    movie_rank['IMDB Rank'] = ranks
 
-    return movie_rank.sort_values('Rank', ascending=False)
+    if not np.isnan(movie_info['rt']):
+        ranks = []
+        rating = movie_info['rt']
+        genre_rank = rank_tables['rt_genre_rank']
+        for genre in movie_info['genres']:
+            ranks.append(genre_rank.loc[genre_rank['rating'] == rating, [genre]].values[0][0])
+        movie_rank['Rotten Tomatoes Rank'] = ranks
+
+    if not np.isnan(movie_info['mc']):
+        ranks = []
+        rating = movie_info['mc']
+        genre_rank = rank_tables['mc_genre_rank']
+        for genre in movie_info['genres']:
+            ranks.append(genre_rank.loc[genre_rank['rating'] == rating, [genre]].values[0][0])
+        movie_rank['Metascore Rank'] = ranks
+
+    return movie_rank.sort_values('IMDB Rank', ascending=False)
 
 # url = 'https://www.imdb.com/title/tt3704428/?ref_=tt_rvi_tt_i_5'
+# url = 'https://www.imdb.com/title/tt7144666/?ref_=hm_wls_tt_i_1'
 # movie_info = get_movie_info(url)
+# movie_rank = get_movie_rank(movie_info, rank_tables)
 # movie_rank = get_movie_rank(movie_info, genre_rank)
