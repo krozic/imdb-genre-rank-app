@@ -75,7 +75,7 @@ def get_movie_rank(movie_info: Dict[str, Any], rank_tables: Dict[str, pd.DataFra
         genre_rank = rank_tables['rt_genre_rank']
         for genre in movie_info['genres']:
             ranks.append(genre_rank.loc[genre_rank['rating'] == rating, [genre]].values[0][0])
-        movie_rank['Rotten Tomatoes Rank'] = ranks
+        movie_rank['Tomatometer Rank'] = ranks
 
     if not np.isnan(movie_info['mc']):
         ranks = []
