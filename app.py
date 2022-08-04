@@ -29,14 +29,10 @@ sidebar = html.Div(
     [
         dbc.Row(
             [
-                # html.P('Film Search'),
                 html.H3("Film Search", className="display-6"),
             ],
             style={"height": "5vh"}, className='bg-primary text-white'
         ),
-        # html.H3("Film Search", className="display-6"),
-        # html.Hr(),
-        # html.P('Enter a link and press submit:'),
         dbc.Row(
             [
                 html.Div(
@@ -253,18 +249,19 @@ app.layout = dbc.Container(
 )
 
 def update_output(n_clicks, rating_choice, isolate_query, url_input):
-    genre_rank = rank_tables[f'{rating_choice}_genre_rank']
-    genre_medians = rank_tables[f'{rating_choice}_genre_medians']
+    # genre_rank = rank_tables[f'{rating_choice}_genre_rank']
+    # genre_medians = rank_tables[f'{rating_choice}_genre_medians']
     if n_clicks == 0:
         movie_rank = pd.DataFrame({'Genre': [' '], 'Rank': [' ']})
-        fig = plot_genre_dist(genre_rank, genre_medians)
+        fig = plot_genre_dist(rank_tables, rating_choice)
+        # fig = plot_genre_dist(genre_rank, genre_medians)
         return '', '', '', '', '', '', '', '', '', fig
     else:
         url = url_input
         highlighter = highlight_rating(rating_choice)
         movie_info = get_movie_info(url)
         movie_rank = get_movie_rank(movie_info, rank_tables)
-        fig = plot_movie_rank(movie_info, movie_rank, genre_rank, genre_medians, rating_choice, isolate_query)
+        fig = plot_movie_rank(movie_info, movie_rank, rank_tables, rating_choice, isolate_query)
         return dbc.Table.from_dataframe(movie_rank, hover=True), \
                movie_info['title'], \
                movie_info['poster'], \
