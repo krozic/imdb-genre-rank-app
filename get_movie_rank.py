@@ -97,6 +97,14 @@ def get_movie_rank(movie_info: Dict[str, Any], rank_tables: Dict[str, pd.DataFra
 
     return movie_rank.sort_values('IMDB Rank', ascending=False)
 
+def highlight_rating(rating_choice: str) -> Dict:
+    highlighter = {
+        'imdb': '',
+        'rt': '',
+        'mc': ''
+    }
+    highlighter[rating_choice] = 'bg-secondary text-white'
+    return highlighter
 # url = 'https://www.imdb.com/title/tt3704428/?ref_=tt_rvi_tt_i_5'
 # url = 'https://www.imdb.com/title/tt7144666/?ref_=hm_wls_tt_i_1'
 # movie_info = get_movie_info(url)

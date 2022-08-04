@@ -72,3 +72,4 @@ def plot_movie_rank(movie_info: Dict[str, Any], movie_rank: pd.DataFrame, genre_
         )
     )
     return fig
+

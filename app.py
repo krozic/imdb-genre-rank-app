@@ -1,4 +1,4 @@
-from get_movie_rank import get_movie_rank, get_movie_info
+from get_movie_rank import get_movie_rank, get_movie_info, highlight_rating
 from plotly_creator import plot_genre_dist, plot_movie_rank
 import dash
 from dash import dcc, html, dash_table
@@ -7,7 +7,7 @@ import pandas as pd
 import dash_bootstrap_components as dbc
 
 # import data:
-movie_rank = pd.DataFrame({'Genre': [' '], 'Rank': [' ']})
+movie_rank = pd.DataFrame({'': [''], '': ['']})
 
 table_names = pd.read_csv('./tables/table_names.csv')
 table_names = [name for name in table_names['0']]
@@ -21,7 +21,6 @@ rating_name = {
     'rt': 'Tomatometer',
     'mc': 'Metascore'
 }
-
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 server = app.server
@@ -110,14 +109,14 @@ sidebar = html.Div(
                             [
                                 dbc.Row(
                                     [
-                                        html.P(id='imdb_rating', children=''),
-                                        html.P(id='rt_rating', children=''),
-                                        html.P(id='mc_rating', children=''),
+                                        html.B(id='imdb_rating', children='', className=''),
+                                        html.B(id='rt_rating', children='', className=''),
+                                        html.B(id='mc_rating', children='', className=''),
                                     ],
                                     # align='center',
                                 ),
                             ],
-                            className='pad-row',
+                            # className='pad-row',
                         ),
                     ],
                     width=4,
@@ -200,7 +199,17 @@ content = html.Div(
                                     # dbc.Table.from_dataframe(movie_rank, id='tbl1'),
                                 ]
                             ),
-                            # dash_table.DataTable(movie_rank.to_dict('records'), [{'name': i, 'id': i} for i in movie_rank.columns], id='tbl'),
+                            # dash_table.DataTable(
+                            #     movie_rank.to_dict('records'),
+                            #     [{'name': i, 'id': i} for i in movie_rank.columns],
+                            #     id='tbl',
+                            #     sort_action='native',
+                            #     style_header_conditional=[{
+                            #         'if': {'column_id': ''},
+                            #         'backgroundColor': 'rgb(123, 138, 139)',
+                            #         'color': 'white'
+                            #     }],
+                            # ),
                         ],
                         width=12
                     ),
@@ -223,7 +232,6 @@ app.layout = dbc.Container(
     fluid=True
 )
 
-
 @app.callback(
     [Output('tbl1', 'children'),
      # Output('tbl', 'data'),
@@ -232,8 +240,11 @@ app.layout = dbc.Container(
      Output('poster', 'src'),
      # Output('rating', 'children'),
      Output('imdb_rating', 'children'),
+     Output('imdb_rating', 'className'),
      Output('rt_rating', 'children'),
+     Output('rt_rating', 'className'),
      Output('mc_rating', 'children'),
+     Output('mc_rating', 'className'),
      Output('ratings_distribution', 'figure')],
     Input('submit-val', 'n_clicks'),
     Input('rating_choice', 'value'),
@@ -247,18 +258,19 @@ def update_output(n_clicks, rating_choice, isolate_query, url_input):
     if n_clicks == 0:
         movie_rank = pd.DataFrame({'Genre': [' '], 'Rank': [' ']})
         fig = plot_genre_dist(genre_rank, genre_medians)
-        return '', '', '', '', '', '', fig
+        return '', '', '', '', '', '', '', '', '', fig
     else:
         url = url_input
+        highlighter = highlight_rating(rating_choice)
         movie_info = get_movie_info(url)
         movie_rank = get_movie_rank(movie_info, rank_tables)
         fig = plot_movie_rank(movie_info, movie_rank, genre_rank, genre_medians, rating_choice, isolate_query)
         return dbc.Table.from_dataframe(movie_rank, hover=True), \
                movie_info['title'], \
                movie_info['poster'], \
-               f'IMDB: {movie_info["imdb"]}', \
-               f'RT: {movie_info["rt"]}', \
-               f'MC: {movie_info["mc"]}', \
+               f'IMDB: {movie_info["imdb"]}', highlighter['imdb'], \
+               f'RT: {movie_info["rt"]}', highlighter['rt'], \
+               f'MC: {movie_info["mc"]}', highlighter['mc'], \
                fig
 
 if __name__ == '__main__':
