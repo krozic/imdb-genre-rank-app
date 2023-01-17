@@ -1,6 +1,7 @@
 venv/
 previous_versions/
 .idea/
+backup/
 *.pyc
 .env
 .DS_Store
