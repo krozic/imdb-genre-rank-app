@@ -12,6 +12,6 @@ def imdb_search(query: str) -> List[Dict[str, str]]:
         if i > 4:
             break
 
-        options.append({"label": f'{title["title"]} {title["description"]}', "value": title["id"]})
+        options.append({"label": f'{title["title"]} {title["description"][:4]}', "value": title["id"]})
         i+=1
     return options
