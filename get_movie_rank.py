@@ -16,10 +16,12 @@ def get_movie_info(url: str, query: bool = False) -> Dict[str, Any]:
     if query:
         url = f'https://www.imdb.com/title/{url}/'
     movie_info = {}
-    uClient = uReq(url)
-    page_html = uClient.read()
-    uClient.close()
-    page_soup = soup(page_html, 'html.parser')
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+    # uClient = uReq(url)
+    # page_html = uClient.read()
+    # uClient.close()
+    page_html = requests.get(url, headers=headers)
+    page_soup = soup(page_html.content, 'html.parser')
 
     movie_info['title'] = page_soup.find('h1', {'data-testid':'hero-title-block__title'}).get_text()
     movie_info['imdb'] = float(page_soup.find('div', {'data-testid': 'hero-rating-bar__aggregate-rating'}).find('span').get_text())
