@@ -23,8 +23,10 @@ def get_movie_info(url: str, query: bool = False) -> Dict[str, Any]:
     page_html = requests.get(url, headers=headers)
     page_soup = soup(page_html.content, 'html.parser')
 
-    movie_info['title'] = page_soup.find('h1', {'data-testid':'hero-title-block__title'}).get_text()
-    movie_info['imdb'] = float(page_soup.find('div', {'data-testid': 'hero-rating-bar__aggregate-rating'}).find('span').get_text())
+    # movie_info['title'] = page_soup.find('h1', {'data-testid':'hero-title-block__title'}).get_text()
+    movie_info['title'] = page_soup.find('h1', {'data-testid':'hero__pageTitle'}).get_text()
+    # movie_info['imdb'] = float(page_soup.find('div', {'data-testid': 'hero-rating-bar__aggregate-rating'}).find('span').get_text())
+    movie_info['imdb'] = float(page_soup.find('div', {'data-testid': 'hero-rating-bar__aggregate-rating__score'}).find('span').get_text())
 
     movie = re.search('tt[0-9]+', url).group()
     r = requests.get(
@@ -124,5 +126,6 @@ def highlight_rating(rating_choice: str) -> Dict:
 # url = 'https://www.imdb.com/title/tt3704428/?ref_=tt_rvi_tt_i_5'
 # url = 'https://www.imdb.com/title/tt7144666/?ref_=hm_wls_tt_i_1'
 # movie_info = get_movie_info(url)
+# print(movie_info)
 # movie_rank = get_movie_rank(movie_info, rank_tables)
 # movie_rank = get_movie_rank(movie_info, genre_rank)

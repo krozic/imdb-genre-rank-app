@@ -3,6 +3,7 @@ import numpy as np
 import json
 
 table = pd.read_csv('./imdb_genre_rank.csv')
+table = pd.read_csv('./imdb_genre_rank.csv')
 
 genres = list(table.columns[1:])
 ratings = table['rating']
